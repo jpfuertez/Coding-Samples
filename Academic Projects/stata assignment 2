@@ -1,0 +1,105 @@
+*********************************************
+*Econ 120C, Winter 2023
+*Name (First, Last): John Fuertez
+*PID: A16660875
+*********************************************
+
+clear all
+set more off
+cap log close
+
+///////////////////////// INSTRUCTION 1 ////////////////////////////////////////
+
+* a. Set the working directory. DO NOT REMOVE CAPTURE FROM THE COMMAND
+* b. Save all the files related to this problem set in one folder in your system.
+* c. Enter the path to that folder below
+* d. While submitting your file, ensure the command capture is written before
+* e. You need to fill in the codes whenever you see comments starting with //!!\\ 
+
+////////////////////////////////////////////////////////////////////////////////
+
+/* 
+To set your working directory: click "File --> Change working directory" and navigate to the folder where you save files for this problem set. 
+In the Stata command window, you will see something like: cd "/Users/YourUsername/Documents/". The part in quotation marks is the directory you need to copy and paste in line 26.
+*/  
+
+capture cd "/Users/j.p./Downloads/120C ps2" 
+
+
+
+
+***********************************************
+*>>>>>>>>>>> QUESTIONS <<<<<<<<<<<<<<<<<<<<
+***********************************************
+
+/* Question 1: Load and describe the dataset */
+use twoa.dta
+
+sum kidcount morekids boy1st boy2nd boys2 girls2 samesex multi2nd agem1 aged1 ///
+agefstm agefstd workedm workedd weeksm1 weeksd1 hourswm hourswd incomem incomed ///
+faminc1 nonmomi
+
+
+/* Question 2: Estimate the effect of fertility on labor supply by OLS */
+reg workedm morekids, robust
+
+/* The estimated coefficient is -.130536 and it might be biased because of the possible presence of reverse causality where having morekids
+can reduce the hours worked and working more can also decrease the amount of kids. */
+
+
+
+/* Question 3: First stage regression of morekids on samesex */
+/* I expect there to be a positive relation because the paper states that parents are much more likely to have 
+another child if the first two children are the same sex, so when the dummy variable is one the coefficient should be positive
+to increase the variable of more children.*/
+
+reg morekids samesex, robust
+
+/* The coefficient .2153336 can be interpreted as the positive relationship between samesex and morekids.
+It is statistically significant because the p-value is 0, and it can be economically meaningfull because it shows a positive relationship 
+between morekids and samesex.*/
+
+test samesex
+/* I do think same sex is a strong instrument because it has a F-statistic of 5112.35 which is much greater
+than our chosen value of relevance 10.*/
+
+/* Samesex is most likely exogenous because sex is randomly assigned and there is most likely no omitted variable in the error term
+that could be correlated with a variable that has a purely random distribution*/
+
+
+/* Question 4: Manual 2SLS */
+reg morekids samesex, r 
+predict double morekids_hat, xb
+reg workedm morekids_hat, r
+
+/* The 2SLS gave the estimate -.2904172 where as the OLS gavea less negative estimate of  -.130536.*/
+
+
+/* Question 5: Automated 2SLS */
+ivregress 2sls workedm (morekids = samesex), r
+
+/* The command gives he coefficient  -.2904172 which is the same as the manual 2SLS, but the standard errors are 
+a little bit differet because the manual regression uses OLS standard errors which do not equal the correct TSLS standard errors.*/
+
+
+/* Question 6: 2SLS with more elaborate model */
+ivregress 2sls workedm (morekids = samesex) agem1 agefstm boy1st boy2nd blackm hispm othracem
+
+/* This regressions estimates a coefficient of -.4722325 which indicates that there is a negative relationship 
+between having more kids and if the mom worked the previous year meaning if there are more kids the mom most likely did not work
+the previous year and vice versa. */
+
+
+
+**********************************************************************************************
+*>>>>>>>> GenAI Statement (See Section 9 on the syllabus for instructions) <<<<<<<<<<<<<<<<<
+**********************************************************************************************
+
+/*
+
+I did not use any GenAI tools to solve the Stata assignment.
+
+*/
+
+
+

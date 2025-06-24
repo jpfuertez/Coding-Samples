@@ -1,0 +1,121 @@
+*********************************************
+*Econ 120C, Winter 2024
+*Name (First, Last): John, Fuertez
+*PID: A16660875
+*********************************************
+
+clear all
+set more off
+cap log close
+
+///////////////////////// INSTRUCTION 1 ////////////////////////////////////////
+
+* a. Set the working directory. DO NOT REMOVE CAPTURE FROM THE COMMAND
+* b. Save all the files related to this problem set in one folder in your system.
+* c. Enter the path to that folder below
+* d. While submitting your file, ensure the command capture is written before
+* e. You need to fill in the codes whenever you see comments starting with //!!\\ 
+
+////////////////////////////////////////////////////////////////////////////////
+
+/* 
+To set your working directory: click "File --> Change working directory" and navigate to the folder where you save files for this problem set. 
+In the Stata command window, you will see something like: cd "/Users/YourUsername/Documents/". The part in quotation marks is the directory you need to copy and paste in line 26.
+*/  
+
+capture cd "~/Dropbox/ps1_stata/" //!!\\ /Users/j.p./Downloads/120C ps1
+
+
+
+***********************************************
+*>>>>>>>>>>> QUESTIONS <<<<<<<<<<<<<<<<<<<<
+***********************************************
+
+
+
+/* Load the "auto" dataset */
+sysuse auto, clear
+
+/* Question 1: Describe the dataset */
+describe
+
+/*There are five different types of variables: string,int, float, and byte. String variables are non-numerical variables like names, 
+in this case the make of each vehicle. Int, float, and byte are all numerical values with the difference between them being the size of the number in 
+each type.*/
+
+/* Question 2: Calculate correlation coefficient between weight and price */
+corr weight price
+
+/* The value 0.5386 indicates that the relationship between weight and price show a positive relationship
+meaning as weight increases so does price.*/
+
+/* Question 3: Generate scatter plot for weight vs. mpg 
+Hint: use the "scatter" command*/
+scatter weight mpg
+
+/* The plot suggests a negative linear relationship since weight decreases as miles per gallon increases.*/
+
+/* Question 4: Keep selected variables */
+keep mpg price weight foreign
+
+/* Question 5: Calculate summary statistics for mpg */
+sum mpg, detail
+ 
+/* mean=21.2973; standard deviation=5.785503; median=20; range=29*/
+
+/* Question 6: Calculate summary statistics for mpg using domestic cars only */
+sum mpg if foreign==0, detail
+
+/* mean=19.82692; standard deviation=4.743297; median=19; range=22*/
+
+
+/* Question 7: Perform hypothesis test for mean mpg difference 
+Hint: use the "ttest" command*/
+ttest mpg, by(foreign)
+
+/*The null hypothesis is there is no statistically significant difference between
+foreign and domestic cars. The alternative hypothesis is that there is a statistically 
+significant difference between foreign and domestic cars. The results of the test showed
+that the t statistic is -3.6308 indicating a strong difference in mean between foreign and domestic cars on average.*/
+
+/* Question 8: Run regression for mpg vs. price, weight, and foreign */
+regress mpg price weight foreign
+
+/*Beta 3 was shown to be  -1.855891 in the regression meaning when the car is foreign (foereign==1)
+the mpg is reduced by 1.855891 on average. However, it had a p-value of 0.154 indicating the coefficient is statistically insignificant*/
+
+/* Question 9: Create a dummy variable "Domestic" */
+gen Domestic = (foreign == 0)
+
+
+/* Question 10: Run regression for mpg vs. price, weight, and Domestic */
+regress mpg price weight Domestic
+
+/*Beta 3 in this regression was 1.855891 meaning when the car is domestic, the miles 
+per gallon increases by 1.855891 on average. This model is more flexible than the model in question 8
+because it shows an increase in miles per gallon if the car is domestic instead of a reduction in mpg
+if the car is foreign which is less impactful of a statistic.*/
+
+/* Question 11: Create "fuel_efficiency" variable and run regression */
+gen fuel_efficiency = mpg/price
+
+regress fuel_efficiency weight foreign
+
+/*Beta 1 is  -2.66e-06 meaning a one pound increase in weight reduces fuel efficiency by 2.66e-06 on average.
+Beta 2 is  -.0020212 meaning if the car is foreign, the fuel efficiency is reduced by .0020212 on average. 
+Both coefficients have a p-value of 0 meaning they are both statistically significant.*/
+
+**********************************************************************************************
+*>>>>>>>> GenAI Statement (See Section 9 on the syllabus for instructions) <<<<<<<<<<<<<<<<<
+**********************************************************************************************
+
+/*
+
+I used Chat GPT to help me understand why I was getting errors in my code and it showed me examples of how
+to use certain commands that confused me. It was extremely useful to me because it gave me a direct, useful answer to my questions 
+that actually worked when I ran the code. 
+
+*/
+
+
+
